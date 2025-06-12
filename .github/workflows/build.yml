@@ -1,0 +1,55 @@
+name: Build Extension
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Make
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make zip
+
+      - name: Set version
+        id: version
+        run: |
+          if [[ $GITHUB_EVENT_NAME == "release" ]]; then
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          fi
+
+      - name: Build Extensions
+        run: make all VERSION=${{ env.VERSION }}
+
+      - name: Upload Chrome Extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: jwt-decoder-chrome-${{ env.VERSION }}
+          path: dist/jwt-decoder-chrome-${{ env.VERSION }}
+
+      - name: Upload Firefox Extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: jwt-decoder-firefox-${{ env.VERSION }}
+          path: dist/jwt-decoder-firefox-${{ env.VERSION }}
+
+      # ✅ Upload to GitHub Release
+      - name: Upload to GitHub Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/jwt-decoder-chrome-${{ env.VERSION }}.zip
+            dist/jwt-decoder-firefox-${{ env.VERSION }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

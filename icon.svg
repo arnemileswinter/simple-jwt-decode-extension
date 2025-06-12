@@ -1,0 +1,12 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <path d="M30 40c-5 0-10 4-10 10v10c0 3-2 5-5 5v8c3 0 5 2 5 5v10c0 6 5 10 10 10" stroke="#333" stroke-width="6" fill="none"/>
+  <path d="M98 40c5 0 10 4 10 10v10c0 3 2 5 5 5v8c-3 0-5 2-5 5v10c0 6-5 10-10 10" stroke="#333" stroke-width="6" fill="none"/>
+  <mask id="padlock-mask">
+    <rect x="46" y="60" width="36" height="40" rx="6" fill="white"/>
+    <circle cx="64" cy="80" r="4" fill="black"/>
+  </mask>
+  <g mask="url(#padlock-mask)">
+    <rect x="46" y="60" width="36" height="40" rx="6" fill="#3EB489"/>
+  </g>
+  <path d="M54 60v-10a10 10 0 0 1 20 0v10" stroke="#3EB489" stroke-width="6" fill="none"/>
+</svg>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JWT Decoder</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 20px;
+        line-height: 1.5;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+      .error {
+        color: red;
+      }
+      .icon {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      header h1 {
+        font-size: 1rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+      }
+
+      #output {
+        display:flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      #output section {
+        border: 1px solid #ccc;
+        padding: 1rem;
+        border-radius: 0.5rem;
+      }
+      #output section h1, #output section h2, #output section h3 {
+        margin: 0;
+        margin-bottom: 0.5rem;
+      }
+    </style>
+    <link rel="preload" href="icon.svg" as="image" type="image/svg+xml"/>
+    <link rel="icon" href="icon.svg" />
+  </head>
+  <body>
+    <header>
+        <img src="icon.svg" alt="JWT Decoder" class="icon"/>
+        <h1>JWT Decoder</h1>
+    </header>
+    <div id="output"></div>
+    <script src="decode.js"></script>
+  </body>
+</html> 
