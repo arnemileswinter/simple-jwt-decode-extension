@@ -27,7 +27,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   }
 
   // Extract all JWT-like strings (three base64url parts separated by dots)
-  const jwtPattern = new RegExp('[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+', 'g');
+  const jwtPattern = new RegExp('[A-Za-z0-9_\\-]+\\.[A-Za-z0-9_\\-]+\\.[A-Za-z0-9_\\-]+', 'g');
   const tokens = selectionText.match(jwtPattern) || [];
 
   if (tokens.length === 0) {
@@ -35,7 +35,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       target: {
         tabId: tab.id
       },
-      function: () => {
+      func: () => {
         alert("No JWT found in selection");
       },
     });

@@ -25,6 +25,10 @@ function decodeJWT(token) {
 
   let header, payload;
   try {
+    // remove any leading text before the json object
+    if (headerJSON.indexOf('{') > 0) {
+      headerJSON = headerJSON.split('{')[1]
+    }
     header = JSON.parse(headerJSON);
   } catch (_) {
     throw new Error("Header is not valid JSON");
@@ -56,23 +60,23 @@ function render(output) {
   let html = "";
 
   tokens.forEach((token, idx) => {
+    html += `<section>`;
+    if (tokens.length > 1) {
+      html += `<h2>Segment ${idx + 1}</h2>`;
+    }
+    html += "<h3>Raw</h3><pre>" + token + "</pre>";
     try {
       const { header, payload, signature } = decodeJWT(token);
-
-      html += `<section>`;
-      if(tokens.length > 1) {
-        html += `<h2>Token ${idx + 1}</h2>`;
-      }
       html += "<h3>Header</h3><pre>" + JSON.stringify(header, null, 2) + "</pre>";
       html += "<h3>Payload</h3><pre>" + JSON.stringify(payload, null, 2) + "</pre>";
       if (signature) {
         html += "<h3>Signature (base64url)</h3><pre>" + signature + "</pre>";
       }
-      html += "<h3>Raw Token</h3><pre>" + token + "</pre>";
-      html += `</section>`;
     } catch (err) {
-      html += `<section><h2>Token ${idx + 1}</h2><p class=\"error\">Error: ${err.message}</p></section>`;
+      html += "<p class=\"error\">Error: " + err.message + "</p>";
     }
+
+    html += `</section>`;
   });
 
   render(html);

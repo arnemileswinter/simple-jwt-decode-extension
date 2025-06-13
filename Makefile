@@ -1,4 +1,4 @@
-VERSION ?= latest
+VERSION ?= 1.0.0
 SOURCES=background.js decode.html decode.js icon.svg
 OUT_DIR=dist
 
