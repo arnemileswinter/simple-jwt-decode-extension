@@ -15,6 +15,17 @@ function base64urlDecode(str) {
   }
 }
 
+// Escape HTML entities so that JSON is rendered literally inside <code> blocks
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, (ch) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  })[ch]);
+}
+
 function decodeJWT(token) {
   const parts = token.split(".");
   if (parts.length < 2) {
@@ -45,6 +56,17 @@ function decodeJWT(token) {
 function render(output) {
   const container = document.getElementById("output");
   container.innerHTML = output;
+
+  // Apply syntax highlighting & line numbers if highlight.js is present
+  if (window.hljs) {
+    hljs.initLineNumbersOnLoad && hljs.initLineNumbersOnLoad();
+    container.querySelectorAll("pre code").forEach((block) => {
+      hljs.highlightElement(block);
+      if (typeof hljs.lineNumbersBlock === "function") {
+        hljs.lineNumbersBlock(block);
+      }
+    });
+  }
 }
 
 (function () {
@@ -89,8 +111,8 @@ function render(output) {
     } else {
       try {
         const { header, payload, signature } = decodeJWT(token);
-        segmentHTML += "<h3>Header</h3><pre>" + JSON.stringify(header, null, 2) + "</pre>";
-        segmentHTML += "<h3>Payload</h3><pre>" + JSON.stringify(payload, null, 2) + "</pre>";
+        segmentHTML += "<h3>Header</h3><pre><code class=\"language-json\">" + escapeHtml(JSON.stringify(header, null, 2)) + "</code></pre>";
+        segmentHTML += "<h3>Payload</h3><pre><code class=\"language-json\">" + escapeHtml(JSON.stringify(payload, null, 2)) + "</code></pre>";
         if (signature) {
           segmentHTML += "<h3>Signature (base64url)</h3><pre>" + signature + "</pre>";
         }
@@ -128,7 +150,15 @@ function render(output) {
     const applyTheme = (theme) => {
       document.documentElement.setAttribute("data-theme", theme);
       localStorage.setItem("jwt_decoder_theme", theme);
-      themeBtn.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+      themeBtn.textContent = theme === "dark" ? "Lights on" : "Lights off";
+
+      // Toggle highlight.js theme stylesheets
+      const hlLight = document.getElementById("hljs-light");
+      const hlDark = document.getElementById("hljs-dark");
+      if (hlLight && hlDark) {
+        hlLight.disabled = theme === "dark";
+        hlDark.disabled = theme !== "dark";
+      }
     };
 
     // Initialize from localStorage or prefers-color-scheme

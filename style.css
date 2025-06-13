@@ -6,6 +6,8 @@
     --surface: #ffffff;
     --text: #333333;
     --border-color: #dddddd;
+
+    --line-numbers: #666666;
 }
 
 /* Dark theme overrides */
@@ -16,6 +18,8 @@
     --surface: #1e1e1e;
     --text: #eeeeee;
     --border-color: #333333;
+
+    --line-numbers: #aaaaaa;
 }
 
 body {
@@ -131,4 +135,32 @@ details.segment.invalid summary::after {
 
 details.segment p.error {
     margin: 0 0 0.5rem 0;
+}
+
+/* Ensure syntax-highlighted code inherits theme background */
+code.hljs {
+    background: inherit;
+}
+
+/* Line numbers styling (plugin highlightjs-line-numbers) */
+.hljs-ln {
+    border-collapse: collapse;
+}
+
+.hljs-ln-line {
+    height: 1.4em; /* align with line-height from <pre> */
+}
+
+.hljs-ln-numbers {
+    text-align: right;
+    user-select: none;
+    color: var(--line-numbers);
+    border-right: 1px solid var(--border-color);
+}
+.hljs-ln-n {
+    padding-right: 0.25rem;
+}
+
+.hljs-ln-code {
+    padding-left: 0.75rem;
 }

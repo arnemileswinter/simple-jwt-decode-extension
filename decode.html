@@ -6,6 +6,11 @@
     <link rel="stylesheet" href="style.css">
     <link rel="preload" href="icon.svg" as="image" type="image/svg+xml"/>
     <link rel="icon" href="icon.svg" />
+    <!-- hljs -->
+    <script src="lib/highlightjs/highlight.min.js"></script>
+    <script src="lib/highlightjs/highlightjs-line-numbers.min.js"></script>
+    <link id="hljs-light" rel="stylesheet" href="lib/highlightjs/default.min.css">
+    <link id="hljs-dark" rel="stylesheet" href="lib/highlightjs/dark.min.css" disabled>
   </head>
   <body>
     <header>
@@ -13,7 +18,7 @@
         <h1>JWT Decoder</h1>
         <button id="collapseAll" class="btn" title="Collapse all segments">Collapse all</button>
         <button id="expandAll" class="btn" title="Expand all segments">Expand all</button>
-        <button id="toggleTheme" class="btn" title="Toggle dark / light mode">Dark mode</button>
+        <button id="toggleTheme" class="btn" title="Toggle dark / light mode">Lights off</button>
     </header>
     <div id="output"></div>
     <script src="content.js"></script>

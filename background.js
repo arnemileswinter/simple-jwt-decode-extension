@@ -2,12 +2,12 @@
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "decode-jwt",
-    title: "Decode as JWT",
+    title: "Extract JWTs from selection",
     contexts: ["selection"],
   });
 });
 
-const openDecodePage = (selectionText) => {
+const openDecodePage = (tab, selectionText) => {
   // Extract all JWT-like strings (three base64url parts separated by dots)
   const jwtPattern = new RegExp('[A-Za-z0-9_\\-]+\\.[A-Za-z0-9_\\-]+\\.[A-Za-z0-9_\\-]+', 'g');
   const tokens = selectionText.match(jwtPattern) || [];
@@ -41,12 +41,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     const lastError = chrome.runtime.lastError;
     if (lastError) {
       console.error(lastError);
-      chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: () => {
-          alert("Error: Please refresh the page and try again.");
-        },
-      });
+      // fallback when content script is not available
+      openDecodePage(tab, info.selectionText);
     } else {
       const selectionText = (response?.text || "").trim();
       if (!selectionText) {
@@ -58,10 +54,14 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         });
         return;
       } else {
-        openDecodePage(selectionText);
+        openDecodePage(tab, selectionText);
       }
     }
   }
 
-  chrome.tabs.sendMessage(tab.id, { action: "simple_jwtdecoder_getSelection" }, (response) => onSelectionMessage(response));
+  try {
+    chrome.tabs.sendMessage(tab.id, { action: "simple_jwtdecoder_getSelection" }, (response) => onSelectionMessage(response))
+  } catch (error) {
+    console.error('Error sending message to content script', error);
+  }
 }); 
