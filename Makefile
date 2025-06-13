@@ -20,18 +20,19 @@ dirs: chrome-dir firefox-dir
 $(HLJS_LINE_NUMBERS_SRC):
 	mkdir -p $(HLJS_LINE_NUMBERS_DIR)
 	wget $(HLJS_LINE_NUMBERS_WEBSRC) -O $(HLJS_LINE_NUMBERS_SRC)
+
 $(HLJS_SRCS):
 	mkdir -p $(HLJS_DIR)
 	for file in $(HLJS_WEBSRCS); do \
 		wget $$file -O $(HLJS_DIR)/$$(basename $$file); \
 	done
+	touch $(HLJS_SRCS)
 
 chrome-dir: $(OUT_DIR)/jwt-decoder-chrome-${VERSION}/
 $(OUT_DIR)/jwt-decoder-chrome-${VERSION}/: $(SOURCES) $(HLJS_SRCS) $(HLJS_LINE_NUMBERS_SRC) manifests/manifest_chrome.template.json
 	mkdir -p $(OUT_DIR)/jwt-decoder-chrome-${VERSION}
 	sed "s/{{VERSION}}/${VERSION}/" manifests/manifest_chrome.template.json > $(OUT_DIR)/jwt-decoder-chrome-${VERSION}/manifest.json
 	cp $(SOURCES) $(OUT_DIR)/jwt-decoder-chrome-${VERSION}
-	# Copy highlight.js build from git submodule
 	mkdir -p $(OUT_DIR)/jwt-decoder-chrome-${VERSION}/lib
 
 	mkdir -p $(OUT_DIR)/jwt-decoder-chrome-${VERSION}/lib/highlightjs
@@ -50,7 +51,6 @@ $(OUT_DIR)/jwt-decoder-firefox-${VERSION}/: $(SOURCES) $(HLJS_SRCS) $(HLJS_LINE_
 	mkdir -p $(OUT_DIR)/jwt-decoder-firefox-${VERSION}
 	sed "s/{{VERSION}}/${VERSION}/" manifests/manifest_firefox.template.json > $(OUT_DIR)/jwt-decoder-firefox-${VERSION}/manifest.json
 	cp $(SOURCES) $(OUT_DIR)/jwt-decoder-firefox-${VERSION}
-	# Copy highlight.js build from git submodule
 	mkdir -p $(OUT_DIR)/jwt-decoder-firefox-${VERSION}/lib
 
 	mkdir -p $(OUT_DIR)/jwt-decoder-firefox-${VERSION}/lib/highlightjs

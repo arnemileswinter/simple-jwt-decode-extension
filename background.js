@@ -22,12 +22,14 @@ const openDecodePage = (tab, selectionText) => {
     return;
   }
 
-  // Assemble query string with one 'token' param per JWT
-  const params = new URLSearchParams();
-  tokens.forEach(t => params.append('token', t));
+  // Store tokens in chrome.storage and pass only a short reference ID in the URL
+  const entryId = (crypto?.randomUUID ? crypto.randomUUID() :
+    Date.now().toString(36) + Math.random().toString(36).substr(2, 5));
 
-  const url = chrome.runtime.getURL(`decode.html?${params.toString()}`);
-  chrome.tabs.create({ url });
+  chrome.storage.local.set({ [entryId]: tokens }, () => {
+    const url = chrome.runtime.getURL(`decode.html?id=${entryId}`);
+    chrome.tabs.create({ url });
+  });
 }
 
 // Handle clicks on the context menu
