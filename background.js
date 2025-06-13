@@ -41,26 +41,26 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     const lastError = chrome.runtime.lastError;
     if (lastError) {
       console.error(lastError);
-      // Handle error (e.g., content script not ready)
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: () => {
           alert("Error: Please refresh the page and try again.");
         },
       });
-      return;
+    } else {
+      const selectionText = (response?.text || "").trim();
+      if (!selectionText) {
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: () => {
+            alert("No selection made. Please select some text.");
+          },
+        });
+        return;
+      } else {
+        openDecodePage(selectionText);
+      }
     }
-    const selectionText = (response?.text || "").trim();
-    if (!selectionText) {
-      chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: () => {
-          alert("No selection made. Please select some text.");
-        },
-      });
-      return;
-    }
-    openDecodePage(selectionText);
   }
 
   chrome.tabs.sendMessage(tab.id, { action: "simple_jwtdecoder_getSelection" }, (response) => onSelectionMessage(response));
