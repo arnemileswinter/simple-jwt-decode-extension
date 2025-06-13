@@ -60,24 +60,85 @@ function render(output) {
   let html = "";
 
   tokens.forEach((token, idx) => {
-    html += `<section>`;
-    if (tokens.length > 1) {
-      html += `<h2>Segment ${idx + 1}</h2>`;
-    }
-    html += "<h3>Raw</h3><pre>" + token + "</pre>";
+    // start a collapsible details block
+    let hasError = false;
+    let segmentClasses = ["segment"];
+    // Determine parsing success for open state / class
     try {
-      const { header, payload, signature } = decodeJWT(token);
-      html += "<h3>Header</h3><pre>" + JSON.stringify(header, null, 2) + "</pre>";
-      html += "<h3>Payload</h3><pre>" + JSON.stringify(payload, null, 2) + "</pre>";
-      if (signature) {
-        html += "<h3>Signature (base64url)</h3><pre>" + signature + "</pre>";
-      }
-    } catch (err) {
-      html += "<p class=\"error\">Error: " + err.message + "</p>";
+      decodeJWT(token);
+    } catch (_) {
+      hasError = true;
+      segmentClasses.push("invalid");
     }
 
-    html += `</section>`;
+    const isOpen = !hasError; // open successful segments by default
+    let segmentHTML = `<details class=\"${segmentClasses.join(" ")}\"${isOpen ? " open" : ""}>`;
+    const title = tokens.length > 1 ? `Segment ${idx + 1}` : "Token";
+    segmentHTML += `<summary>${title}</summary>`;
+
+    // Always show raw token
+    segmentHTML += "<h3>Raw</h3><pre>" + token + "</pre>";
+
+    if (hasError) {
+      // Re-run to get error message
+      try {
+        decodeJWT(token);
+      } catch (err) {
+        segmentHTML += "<p class=\"error\">Error: " + err.message + "</p>";
+      }
+    } else {
+      try {
+        const { header, payload, signature } = decodeJWT(token);
+        segmentHTML += "<h3>Header</h3><pre>" + JSON.stringify(header, null, 2) + "</pre>";
+        segmentHTML += "<h3>Payload</h3><pre>" + JSON.stringify(payload, null, 2) + "</pre>";
+        if (signature) {
+          segmentHTML += "<h3>Signature (base64url)</h3><pre>" + signature + "</pre>";
+        }
+      } catch (err) {
+        // Should not reach here because we already parsed successfully, but fallback
+        segmentHTML += "<p class=\"error\">Error: " + err.message + "</p>";
+      }
+    }
+
+    segmentHTML += `</details>`;
+    html += segmentHTML;
   });
 
   render(html);
+
+  // Attach collapse all button behaviour
+  const collapseBtn = document.getElementById("collapseAll");
+  if (collapseBtn) {
+    collapseBtn.addEventListener("click", () => {
+      document.querySelectorAll("details.segment").forEach(det => det.removeAttribute("open"));
+    });
+  }
+
+  // Attach expand all button behaviour
+  const expandBtn = document.getElementById("expandAll");
+  if (expandBtn) {
+    expandBtn.addEventListener("click", () => {
+      document.querySelectorAll("details.segment").forEach(det => det.setAttribute("open", ""));
+    });
+  }
+
+  // Theme toggle functionality
+  const themeBtn = document.getElementById("toggleTheme");
+  if (themeBtn) {
+    const applyTheme = (theme) => {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("jwt_decoder_theme", theme);
+      themeBtn.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+    };
+
+    // Initialize from localStorage or prefers-color-scheme
+    const savedTheme = localStorage.getItem("jwt_decoder_theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(savedTheme || (prefersDark ? "dark" : "light"));
+
+    themeBtn.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+      applyTheme(current === "dark" ? "light" : "dark");
+    });
+  }
 })(); 
