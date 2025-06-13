@@ -1,5 +1,5 @@
 VERSION ?= 1.0.0
-SOURCES=background.js decode.html decode.js icon.svg
+SOURCES=background.js decode.html decode.js content.js icon.svg style.css
 OUT_DIR=dist
 
 .PHONY: all clean dirs chrome-dir firefox-dir chrome-zip firefox-zip $(OUT_DIR)
